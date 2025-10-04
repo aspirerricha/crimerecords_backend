@@ -2,9 +2,12 @@
 import java.sql.*;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/crime_management";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "password";
+    private static final String URL = System.getenv().getOrDefault(
+            "DB_URL",
+            "jdbc:mysql://localhost:3306/crime_management?useSSL=false&serverTimezone=UTC"
+    );
+    private static final String USERNAME = System.getenv().getOrDefault("DB_USER", "root");
+    private static final String PASSWORD = System.getenv().getOrDefault("DB_PASSWORD", "password");
 
     public static Connection getConnection() throws SQLException {
         try {

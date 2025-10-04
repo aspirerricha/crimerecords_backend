@@ -5,6 +5,27 @@ import java.util.List;
 
 public class CrimeRecordDAO {
 
+    public CrimeRecordDAO() {
+        ensureTableExists();
+    }
+
+    private void ensureTableExists() {
+        String ddl = "CREATE TABLE IF NOT EXISTS crime_records (" +
+                "case_id VARCHAR(64) PRIMARY KEY," +
+                "crime_type VARCHAR(255) NOT NULL," +
+                "location VARCHAR(255) NOT NULL," +
+                "crime_date DATE NOT NULL," +
+                "description TEXT," +
+                "status VARCHAR(64) NOT NULL" +
+                ")";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(ddl);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Insert crime record
     public boolean insertCrimeRecord(CrimeRecord crime) {
         String sql = "INSERT INTO crime_records (case_id, crime_type, location, crime_date, description, status) VALUES (?, ?, ?, ?, ?, ?)";
