@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class App {
     public static void main(String[] args) {
@@ -263,7 +266,6 @@ class DashboardUI extends JFrame implements ActionListener {
         frame3.setVisible(true);
     }
 
-    @Override
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == deleteBtn) {
@@ -530,5 +532,48 @@ class CrimeEntryUI extends JFrame {
         // Add action listeners
         saveBtn.addActionListener(e -> saveCrimeRecord());
         cancelBtn.addActionListener(e -> dispose());
+    }
+
+    private void saveCrimeRecord() {
+        String caseId = caseIdField.getText().trim();
+        String crimeType = crimeTypeField.getText().trim();
+        String location = locationField.getText().trim();
+        String dateText = dateField.getText().trim();
+        String description = descriptionArea.getText().trim();
+
+        if (caseId.isEmpty() || crimeType.isEmpty() || location.isEmpty() || dateText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill Case ID, Crime Type, Location and Date.", "Validation", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Date crimeDate;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            sdf.setLenient(false);
+            crimeDate = sdf.parse(dateText);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Invalid date format. Use yyyy-MM-dd.", "Validation", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        CrimeRecord record = new CrimeRecord();
+        record.setCaseId(caseId);
+        record.setCrimeType(crimeType);
+        record.setLocation(location);
+        record.setDate(crimeDate);
+        record.setDescription(description);
+        record.setStatus("Open");
+
+        boolean inserted = crimeDAO.insertCrimeRecord(record);
+        if (inserted) {
+            JOptionPane.showMessageDialog(this, "Saved Successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            caseIdField.setText("");
+            crimeTypeField.setText("");
+            locationField.setText("");
+            dateField.setText("");
+            descriptionArea.setText("");
+        } else {
+            JOptionPane.showMessageDialog(this, "Save failed. Please check logs and database.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
