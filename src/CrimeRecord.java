@@ -1,4 +1,3 @@
-// CrimeRecord.java
 import java.util.Date;
 
 public class CrimeRecord {
